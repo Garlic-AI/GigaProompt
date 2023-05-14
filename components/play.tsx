@@ -68,45 +68,36 @@ function ModelCard({
 }) {
   const [loading, setLoading] = useState(false)
   const [modelResults, setModelResults] = useState<string[]>([])
-//   const [selectedModel, setSelectedModel] = useState(model.name)
-
-//   useEffect(() => {
-//     if (inputText === "") return
-//     const fetchModelResults = async () => {
-//       try {
-//         const response = await fetch("/api/inference2", {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify({
-//             text: inputText,
-//             model: selectedModel,
-//           }),
-//         })
-
-//         if (!response.ok) {
-//           throw new Error(response.statusText)
-//         }
-
-//         const result = await response.json()
-//         setModelResults(result.inference)
-//       } catch (error) {
-//         console.error(error)
-//       }
-//     }
-
-//     fetchModelResults()
-//     setLoading(false)
-//   }, [loading])
-
-const [selectedModel, setSelectedModel] = useState(model.name)
-
-  const run = () => fetchModelResults(selectedModel)
+  const [selectedModel, setSelectedModel] = useState(model.name)
 
   useEffect(() => {
-    setModelResults(modelResults[selectedModel] || [])
-  }, [modelResults])
+    if (inputText === "") return
+    const fetchModelResults = async () => {
+      try {
+        const response = await fetch("/api/inference2", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: inputText,
+            model: selectedModel,
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error(response.statusText)
+        }
+
+        const result = await response.json()
+        setModelResults(result.inference)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchModelResults()
+  }, [loading])
 
   return (
     <div className="flex flex-col h-full">
@@ -115,9 +106,9 @@ const [selectedModel, setSelectedModel] = useState(model.name)
           <div className="flex items-center space-x-2">
             {/* <span className="font-semibold">Model: {model.name}</span> */}
             <div className="mb-2">
-              <Select onValueChange={setSelectedModel}>
+              <Select value={selectedModel} onValueChange={setSelectedModel}>
                 <SelectTrigger className="rounded-md border border-gray-300 px-2 py-1 w-[180px]">
-                    <SelectValue>{selectedModel}</SelectValue>
+                  <SelectValue>{selectedModel}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {model.modelChoices.map((choice: any, index: any) => (
@@ -158,43 +149,23 @@ const [selectedModel, setSelectedModel] = useState(model.name)
           </button>
         </div>
       </div>
-      <Button onClick={() => setLoading(!loading)}>Run</Button>
     </div>
   )
 }
 
-const Footer: FC<{ onRun: (text: string) => void }> = ({ onRun }) => {
-    const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
-    const [modelResults, setModelResults] = useState<Record<string, string[]>>({})
-  
-    const fetchModelResults = async (model: string) => {
-      const response = await fetch("/api/inference2", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: textAreaRef.current ? textAreaRef.current.value : '',
-          model,
-        }),
-      })
-  
-      if (!response.ok) {
-        throw new Error(response.statusText)
-      }
-  
-      const result = await response.json()
-      setModelResults((prevResults) => ({
-        ...prevResults,
-        [model]: result.inference,
-      }))
-    }
-  
-    const handleRun = () => {
-      if (textAreaRef.current) {
-        onRun(fetchModelResults)
-      }
-    }
+interface FooterProps {
+  onRun: () => void
+}
+
+const Footer: FC<FooterProps> = ({ onRun }) => {
+  const [inputText, setInputText] = useState("")
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
+
+  const handleRunClick = () => {
+    onRun();
+    setInputText("");
+  }
+
 
   return (
     <div className="flex flex-col items-stretch justify-between bg-white shadow-lg sticky bottom-0 z-50 relative h-1/4 backdrop-blur outline-none border-t border-gray-200">
@@ -205,6 +176,10 @@ const Footer: FC<{ onRun: (text: string) => void }> = ({ onRun }) => {
         style={{ fontFamily: "Monaco, monospace" }}
       />
       <div className="flex justify-end p-4 space-x-2">
+        {/* <div
+          className="border-dashed border-2 rounded-md flex items-center justify-center cursor-pointer px-2 py-2"
+          onClick={() => {}}
+        > */}
         <Button variant="ghost">
           <span className="text-gray-500 flex items-center">
             <PlusIcon className="h-3 w-4 mr-2" />
@@ -214,9 +189,10 @@ const Footer: FC<{ onRun: (text: string) => void }> = ({ onRun }) => {
         <Button variant="ghost" className="mr-12">
           Clear
         </Button>
-        <Button variant="default" onClick={handleRun}>
+        <Button variant="default" onClick={handleRunClick}>
           Run
         </Button>
+        {/* <Button variant="default" onClick={() => runModels(textAreaRef.current?.value || "")}>Run Prompt</Button> */}
       </div>
     </div>
   )
@@ -258,9 +234,95 @@ const Play: FC<PlayProps> = ({ models, onAddModel, onDeleteModel }) => {
           </div>
         </div>
       </main>
-      <Footer onRun={setInputText} />
+      <Footer onRun={() => {}} />
     </div>
   )
 }
 
 export default Play
+
+// import React, { useState } from 'react';
+
+// const Play = () => {
+//   const [models, setModels] = useState([
+//     { name: 'davinci', result: '' },
+//     { name: 'curie', result: '' },
+//     { name: 'babbage', result: '' },
+//     { name: 'ada', result: '' },
+//     { name: 'content-filter-alpha-c4', result: '' },
+//     { name: 'content-filter-dev', result: '' },
+//     { name: 'content-filter-s3', result: '' },
+//   ]);
+//   const [inputText, setInputText] = useState('this is a test');
+
+//   const clearModels = () => {
+//     setModels((prevModels) => prevModels.map((prevModel) => ({ ...prevModel, result: '' })));
+//     };
+
+//   const fetchModelResults = async (model: any) => {
+//     const response = await fetch('/api/inference', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ chat_model: model.name, query: inputText }),
+//     });
+//     if (!response.ok) throw new Error(response.statusText);
+
+//     const data = await response.body;
+//     if (!data) {
+//       return;
+//     }
+
+//     const reader = data.getReader();
+//     const decoder = new TextDecoder('utf-8');
+//     let result = '';
+//     let done = false;
+
+//     while (!done) {
+//       const { value, done: doneReading } = await reader.read();
+//       done = doneReading;
+//       const chunkValue = decoder.decode(value);
+//       setModels((prevModels) => {
+//         const updatedModels = prevModels.map((prevModel) => {
+//           if (prevModel.name === model.name) {
+//             return { ...prevModel, result: prevModel.result + chunkValue };
+//           }
+//           return prevModel;
+//         });
+//         return updatedModels;
+//       }
+//         );
+//     }
+
+//     return result;
+//   };
+
+//   const handleRun = async () => {
+//     clearModels();
+//     const updatedModels = await Promise.all(
+//       models.map(async (model) => {
+//         const result = await fetchModelResults(model)
+//         // default to an empty string if the result is undefined
+//         return { ...model, result: result || '' }
+//       })
+//     );
+//   }
+
+//   return (
+//     <div>
+//       <input
+//         type="text"
+//         value={inputText}
+//         onChange={(e) => setInputText(e.target.value)}
+//       />
+//       <button onClick={handleRun}>Run</button>
+//       {models.map((model, index) => (
+//         <div key={index}>
+//           <h2>{model.name}</h2>
+//           <p>{model.result}</p>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default Play;
