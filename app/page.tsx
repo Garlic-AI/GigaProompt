@@ -1,39 +1,79 @@
+"use client"
 import Link from "next/link"
 
 import { siteConfig } from "@/config/site"
 import { buttonVariants } from "@/components/ui/button"
+import Play from "@/components/play"
+import React, { useState } from "react";
+// import Exp from "@/app/experiment"
 
 export default function IndexPage() {
+
+const [models, setModels] = useState([
+  {
+    name: 'GPT-3',
+    provider: 'OpenAI',
+    description: 'OpenAI\'s third-generation language prediction model.',
+    settings: { temperature: 0.7, topP: 1 },
+    modelChoices: [
+      { 
+        name: 'GPT-3', 
+        provider: 'OpenAI', 
+        description: 'OpenAI\'s third-generation language prediction model.',
+        defaultSettings: { temperature: 0.7, topP: 1 }
+      },
+      { 
+        name: 'GPT-2', 
+        provider: 'OpenAI', 
+        description: 'OpenAI\'s second-generation language prediction model.',
+        defaultSettings: { temperature: 0.6, topP: 0.9 }
+      },
+      // More model choices...
+    ],
+  },
+  // More models...
+]);
+
+  
+
+  const addModel = () => {
+    const newModel = {
+      name: 'GPT-3',
+      provider: 'OpenAI',
+      description: 'OpenAI\'s third-generation language prediction model.',
+      settings: { temperature: 0.7, topP: 1 },
+      modelChoices: [
+        { 
+          name: 'GPT-3', 
+          provider: 'OpenAI', 
+          description: 'OpenAI\'s third-generation language prediction model.',
+          defaultSettings: { temperature: 0.7, topP: 1 }
+        },
+        { 
+          name: 'GPT-2', 
+          provider: 'OpenAI', 
+          description: 'OpenAI\'s second-generation language prediction model.',
+          defaultSettings: { temperature: 0.6, topP: 0.9 }
+        },
+        // More model choices...
+      ],      
+    };
+    setModels(models.concat(newModel));
+  };
+
+  const deleteModel = (modelIndex: number) => {
+    setModels(models.filter((_, index) => index !== modelIndex));
+  };
+
   return (
-    <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      <div className="flex max-w-[980px] flex-col items-start gap-2">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
-          Beautifully designed components <br className="hidden sm:inline" />
-          built with Radix UI and Tailwind CSS.
-        </h1>
-        <p className="max-w-[700px] text-lg text-muted-foreground sm:text-xl">
-          Accessible and customizable components that you can copy and paste
-          into your apps. Free. Open Source. And Next.js 13 Ready.
-        </p>
-      </div>
-      <div className="flex gap-4">
-        <Link
-          href={siteConfig.links.docs}
-          target="_blank"
-          rel="noreferrer"
-          className={buttonVariants({ size: "lg" })}
-        >
-          Documentation
-        </Link>
-        <Link
-          target="_blank"
-          rel="noreferrer"
-          href={siteConfig.links.github}
-          className={buttonVariants({ variant: "outline", size: "lg" })}
-        >
-          GitHub
-        </Link>
-      </div>
-    </section>
-  )
-}
+
+    <div className="bg-gray-100">
+        <Play 
+          models={models}
+          onAddModel={addModel}
+          onDeleteModel={deleteModel}
+        />
+    </div>
+
+  );
+};
