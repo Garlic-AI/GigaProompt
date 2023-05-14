@@ -69,9 +69,9 @@ const [models, setModels] = useState([
 
     <div className="bg-gray-100">
         <Play 
-          models={models}
-          onAddModel={addModel}
-          onDeleteModel={deleteModel}
+          // models={models}
+          // onAddModel={addModel}
+          // onDeleteModel={deleteModel}
         />
     </div>
 
