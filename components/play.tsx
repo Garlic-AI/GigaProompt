@@ -68,37 +68,45 @@ function ModelCard({
 }) {
   const [loading, setLoading] = useState(false)
   const [modelResults, setModelResults] = useState<string[]>([])
-  const [selectedModel, setSelectedModel] = useState(model.name)
+//   const [selectedModel, setSelectedModel] = useState(model.name)
+
+//   useEffect(() => {
+//     if (inputText === "") return
+//     const fetchModelResults = async () => {
+//       try {
+//         const response = await fetch("/api/inference2", {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             text: inputText,
+//             model: selectedModel,
+//           }),
+//         })
+
+//         if (!response.ok) {
+//           throw new Error(response.statusText)
+//         }
+
+//         const result = await response.json()
+//         setModelResults(result.inference)
+//       } catch (error) {
+//         console.error(error)
+//       }
+//     }
+
+//     fetchModelResults()
+//     setLoading(false)
+//   }, [loading])
+
+const [selectedModel, setSelectedModel] = useState(model.name)
+
+  const run = () => fetchModelResults(selectedModel)
 
   useEffect(() => {
-    if (inputText === "") return
-    const fetchModelResults = async () => {
-      try {
-        const response = await fetch("/api/inference2", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            text: inputText,
-            model: selectedModel,
-          }),
-        })
-
-        if (!response.ok) {
-          throw new Error(response.statusText)
-        }
-
-        const result = await response.json()
-        setModelResults(result.inference)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    fetchModelResults()
-    setLoading(false)
-  }, [loading])
+    setModelResults(modelResults[selectedModel] || [])
+  }, [modelResults])
 
   return (
     <div className="flex flex-col h-full">
@@ -156,13 +164,37 @@ function ModelCard({
 }
 
 const Footer: FC<{ onRun: (text: string) => void }> = ({ onRun }) => {
-  const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
-
-  const handleRun = () => {
-    if (textAreaRef.current) {
-      onRun(textAreaRef.current.value)
+    const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
+    const [modelResults, setModelResults] = useState<Record<string, string[]>>({})
+  
+    const fetchModelResults = async (model: string) => {
+      const response = await fetch("/api/inference2", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: textAreaRef.current ? textAreaRef.current.value : '',
+          model,
+        }),
+      })
+  
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+  
+      const result = await response.json()
+      setModelResults((prevResults) => ({
+        ...prevResults,
+        [model]: result.inference,
+      }))
     }
-  }
+  
+    const handleRun = () => {
+      if (textAreaRef.current) {
+        onRun(fetchModelResults)
+      }
+    }
 
   return (
     <div className="flex flex-col items-stretch justify-between bg-white shadow-lg sticky bottom-0 z-50 relative h-1/4 backdrop-blur outline-none border-t border-gray-200">
