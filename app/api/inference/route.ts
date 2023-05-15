@@ -19,12 +19,19 @@ import { NextRequest } from "next/server";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-export const config = {
-    api: {
-      bodyParser: false,
-    },
-    runtime: "edge",
-};
+// export const config = {
+//     api: {
+//       bodyParser: false,
+//     },
+//     runtime: "edge",
+// };
+
+// export const dynamic = 'auto';
+// export const dynamicParams = true;
+// export const revalidate = false;
+// export const fetchCache = 'auto';
+// export const runtime = 'edge';
+// export const preferredRegion = 'all';
 
 type Query = {
     query: string

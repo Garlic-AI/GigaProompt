@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/ui/button"
 import Play from "@/components/play"
 import React, { useState } from "react";
 // import Exp from "@/app/experiment"
+// import NavBar from "@/components/layout/navbar"
 
 export default function IndexPage() {
 
@@ -68,6 +69,7 @@ const [models, setModels] = useState([
   return (
 
     <div>
+        {/* <NavBar session={null} /> */}
         <Play 
           // models={models}
           // onAddModel={addModel}
