@@ -67,7 +67,7 @@ const [models, setModels] = useState([
 
   return (
 
-    <div className="bg-gray-100">
+    <div>
         <Play 
           // models={models}
           // onAddModel={addModel}
