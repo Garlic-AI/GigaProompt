@@ -52,21 +52,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
       <html lang="en">
-        <div className="mb-20">
-       
-          </div>
-      <body
+  
+        <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",
             fontSans.variable
           )}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          
-          <Suspense fallback="...">
-            {/* @ts-expect-error Server Component */}
-            {/* <Nav /> */}
-          </Suspense>
+        
            <div className="relative flex min-h-screen flex-col">
              <SessionProvider >
              <SiteHeader />
