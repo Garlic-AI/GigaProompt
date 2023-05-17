@@ -257,21 +257,42 @@ const Play = () => {
 
 
   const fetchModelResults = async (model: any, inputText: string) => {
-    const response = await fetch("/api/inference", {
+    const response = await fetch("/api/newInference", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
 
+      let params = {
+        systemPrompt,
+        temperature: 0.7,
+      };
+    
+      
+    
+      params.model = model;
+      params.maxTokens = 3000;
+      params.stream = true;
+      params.userPrompt = inputText
 
-      body: JSON.stringify({
-        query: inputText,
-        llmConfig: {
-            type: "openai",
-        },
-        }),
+      body: JSON.stringify(params),
     })
+
+      
+        
+        // {
+        
+      // }
+
+
+      // body: JSON.stringify({
+      //   query: inputText,
+      //   llmConfig: {
+      //       type: "openai",
+      //   },
+      //   }),
+    // })
     if (!response.ok) throw new Error(response.statusText)
 
-    const data = await response.body
+    const data = response.body
     if (!data) {
       return
     }
