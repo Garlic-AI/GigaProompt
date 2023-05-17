@@ -163,7 +163,7 @@ const Footer: FC<FooterProps> = ({ onRun, inputText, setInputText, addModel }) =
   }
 
   return (
-    <div className="flex flex-col items-stretch justify-between bg-white shadow-lg sticky bottom-0 z-50 relative h-1/4 backdrop-blur outline-none border-t border-gray-200">
+    <div className="flex flex-col items-stretch justify-between bg-white shadow-lg sticky bottom-0 z-1 relative h-1/4 backdrop-blur outline-none border-t border-gray-200">
 
 <div className=" top-2 left-2 text-sm text-gray-400 p-3">
     ✨ proompt here ✨

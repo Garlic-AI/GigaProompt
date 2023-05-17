@@ -1,3 +1,4 @@
+"use client"
 import "@/styles/globals.css"
 import { Suspense } from "react"
 import { Metadata } from "next"
@@ -13,6 +14,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Analytics } from "@vercel/analytics/react";
 import { sfPro, inter } from "./fonts";
 import cx from "classnames";
+import { SessionProvider,useSession } from "next-auth/react"
+
 
 
 export const metadata: Metadata = {
@@ -45,6 +48,7 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+
   return (
     <>
       <html lang="en">
@@ -58,14 +62,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
           )}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          
           <Suspense fallback="...">
             {/* @ts-expect-error Server Component */}
             {/* <Nav /> */}
           </Suspense>
            <div className="relative flex min-h-screen flex-col">
+             <SessionProvider >
              <SiteHeader />
-    
-             <div className="flex-1">{children}</div>
+              {children}
+              </SessionProvider>
+         
              </div>
              <TailwindIndicator />
          </ThemeProvider>
