@@ -26,9 +26,10 @@ import { Settings } from "lucide-react";
 //   SystemMessagePromptTemplate,
 // } = require("langchain/prompts");
 // const { toNodeReadable } = require("web-streams-node");
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 
-exports.createLLM = async function (conf: any) {
+function createLLM(conf: any) {
     const encoder = new TextEncoder();
     const stream = new TransformStream();
     const writer = stream.writable.getWriter();
@@ -58,7 +59,7 @@ exports.createLLM = async function (conf: any) {
       presencePenalty: conf.presencePenalty,
       streaming: true,
       callbackManager: callbackManager,
-      openAIApiKey: process.env.OPENAI_API_KEY,
+      openAIApiKey: OPENAI_API_KEY,
       modelName: "gpt-3.5-turbo"
     };
   
@@ -87,9 +88,11 @@ exports.createLLM = async function (conf: any) {
    * @param {Object} conf Configuration object containing various options for controlling the AI model's responses.
    * @returns {NodeReadable} Returns a NodeReadable stream of responses from the AI model.
    */
-  exports.chatStream = async function (conf: any) {  
+  export async function POST(req: Request) {
   
-    console.log('conf in chatStream:', conf)
+    const body = await req.json();
+
+    const { llm, stream } = createLLM(body);
   
     let {
       temperature = 0.7,
