@@ -151,6 +151,8 @@ function ModelCard({
 
 interface FooterProps {
   onRun: (inputText: string) => void
+  onRunAll: (inputText: string) => void
+  onRunImproved: (inputText: string) => void
   inputText: string
   setInputText: (inputText: string) => void
   addModel: () => void
@@ -158,6 +160,8 @@ interface FooterProps {
 
 const Footer: FC<FooterProps> = ({
   onRun,
+  onRunAll,
+  onRunImproved,
   inputText,
   setInputText,
   addModel,
@@ -165,6 +169,15 @@ const Footer: FC<FooterProps> = ({
   const handleRunClick = () => {
     onRun(inputText)
   }
+
+  const handleRunAllClick = () => {
+    onRunAll(inputText)
+  }
+
+  const handleRunImprovedClick = () => {
+    onRunImproved(inputText)
+  }
+
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value)
@@ -204,6 +217,12 @@ const Footer: FC<FooterProps> = ({
         </Button>
         <Button variant="default" onClick={handleRunClick}>
           Run
+        </Button>
+        <Button variant="default" onClick={handleRunAllClick}>
+          Run With Context
+        </Button>
+        <Button variant="default" onClick={handleRunImprovedClick}>
+          Run Improved
         </Button>
       </div>
     </div>
@@ -291,92 +310,123 @@ const Play = () => {
       prevModels.map((prevModel: ModelType) => ({ ...prevModel, result: "" }))
     )
   }
+// }
 
-const fetchModelResults = async (
-  model: ModelType,
-  inputText: string
-): Promise<string> => {
-  // Prepare the parameters
-
-
-  type ModelType = {
-    name: string
-    id: string
-    provider: string
-    description: string
-    settings: {
-      temperature: number
-      topP: number
-    }
-    result: string
-    modelChoices: {
-      name: string
-      provider: string
-      description: string
-      defaultSettings: {
-        temperature: number
-        topP: number
-      }
-    }[]
-  }
-  
-// const params = {
-//     systemPrompt: "You are an AI assistant. Help in any way you can.",
-//     temperature: model.settings.temperature,
-//     model: model.name,
-//     maxTokens: 3000,
-//     stream: true,
-//     userPrompt: inputText,
-//   }
-
+const fetchModelResults = async (model: ModelType, inputText: string) => {
   // Create a Config object
   const config: Config = {
     type: model.provider,
-    model: model.name, // Use the model's name
-  }
+    model: model.name,
+  };
 
   // Create a Query object
   const query: Query = {
     query: inputText,
     llmConfig: config,
-  }
+  };
 
-  console.log("query: ", query)
+  console.log("query: ", query);
+  
   // Make the API request
   const response = await fetch("/api/inferenceFinal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(query), // Pass the Query object in the body
-  })
+    body: JSON.stringify(query),
+  });
 
-    if (!response.ok) throw new Error(response.statusText)
+  if (!response.ok) throw new Error(response.statusText);
+  if (!response.body) throw new Error('Response body is missing');
 
-    const data = await response.body?.getReader().read()
-    if (!data) {
-      return ""
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+
+  while (true) {
+    const { done, value } = await reader.read();
+
+    if (done) {
+      break;
     }
 
-    const decoder = new TextDecoder("utf-8")
-    const chunkValue = decoder.decode(data.value)
+    const chunkValue = decoder.decode(value, {stream: !done});
 
     setModels((prevModels: ModelType[]) => {
       return prevModels.map((prevModel: ModelType) => {
         if (prevModel.id === model.id) {
-          return { ...prevModel, result: prevModel.result + chunkValue }
+          return { ...prevModel, result: prevModel.result ? prevModel.result + chunkValue : chunkValue };
         }
-        return prevModel
-      })
-    })
+        return prevModel;
+      });
+    });
+  }
+};
 
-    return chunkValue
+  const handleRunAll = async (inputText: string): Promise<void> => {
+    clearModels()
+    models.forEach(async (model: ModelType) => {
+      let concatinatedPreviousResultsAndInputText = "Previous results:\n";
+      models.forEach((model: ModelType) => {
+        concatinatedPreviousResultsAndInputText += JSON.stringify({model: model.name, result: model.result}, null, 2) + '\n\n';
+      });
+      // let concatinatedPreviousResultsAndInputText = "Previous results:" + '\n\n' + JSON.stringify(models, null, 2);
+      concatinatedPreviousResultsAndInputText += '\n\n\`\`\`\n' + "Based on the previous results, answer the following command:" + '\n\n' + inputText;
+
+      console.log("concatinatedPreviousResultsAndInputText: ", concatinatedPreviousResultsAndInputText);
+
+      await fetchModelResults(model, concatinatedPreviousResultsAndInputText)
+    })
   }
 
   const handleRun = async (inputText: string): Promise<void> => {
     clearModels()
+   
     models.forEach(async (model: ModelType) => {
       await fetchModelResults(model, inputText)
-    })
+    }
+    )
   }
+
+  // const handeRunImproved = async (inputText: string): Promise<void> => {
+  //   clearModels()
+
+  //   const improvedInputText = await fetch("/api/improve", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ "query": inputText }),
+  //   })
+
+  //   if (!improvedInputText.ok) throw new Error(improvedInputText.statusText);
+
+  //   const improvedInputTextJson = await improvedInputText.json();
+
+  //   models.forEach(async (model: ModelType) => {
+  //     await fetchModelResults(model, improvedInputTextJson.query)
+  //   }
+  //   )
+  // }
+
+  const handeRunImproved = async (inputText: string): Promise<void> => {
+    clearModels();
+  
+    const response = await fetch("/api/improve", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ "query": inputText }),
+    });
+
+    console.log("response improved: ", response);
+  
+    if (!response.ok) throw new Error(response.statusText);
+  
+    const { query } = await response.json();
+    
+  
+    for (const model of models) {
+      await fetchModelResults(model, query);
+    }
+  }
+  
+
+
 
   const getGridColumns = (numModels: number): string => {
     if (numModels === 1) {
@@ -447,6 +497,8 @@ const fetchModelResults = async (
         <div className="mb-8">
           <Footer
             onRun={handleRun}
+            onRunAll={handleRunAll}
+            onRunImproved={handeRunImproved}
             inputText={inputText}
             setInputText={setInputText}
             addModel={addModel}
