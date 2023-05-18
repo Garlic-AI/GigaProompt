@@ -81,6 +81,7 @@ function createLLM(conf: any) {
   };
   
   
+  
   /**
    * This function exports a chatStream method that configures a conversation with the AI model and returns a NodeReadable stream. (Note that it doesn't return cost or messages)
    * The NodeReadable stream is an object that emits data readable in a Node.js environment, which makes it easy to consume the AI model's responses in real time.
