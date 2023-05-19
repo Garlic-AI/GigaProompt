@@ -17,7 +17,6 @@ import cx from "classnames";
 import { SessionProvider,useSession } from "next-auth/react"
 
 
-
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,

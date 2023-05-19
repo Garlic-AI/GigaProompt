@@ -28,7 +28,7 @@ export function SiteHeader() {
   return (
     <>
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10 top-0 left-0" onClose={closeModal}>
+      <Dialog as="div" className="relative z-10 top-0 left-0 " onClose={closeModal}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -38,10 +38,10 @@ export function SiteHeader() {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-75" />
+          <div className="fixed inset-0 z-30 bg-gray-100 bg-opacity-10 backdrop-blur" />
         </Transition.Child>
 
-        <div className="fixed inset-0 overflow-y-auto">
+        <div className="fixed z-50 inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <Transition.Child
               as={Fragment}
@@ -52,17 +52,26 @@ export function SiteHeader() {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded bg-white p-6 text-left align-middle shadow-xl transition-all">
-                
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden shadow-xl rounded bg-white align-middle md:max-w-md md:rounded-2xl md:border md:border-gray-200 transition-all">
+              <div className="flex flex-col items-center justify-center space-y-3 border-b border-gray-200 bg-white px-4 py-6 pt-8 text-center md:px-16">
+                <p className="text-black">Logo</p>
+                <h3 className="font-display text-2xl font-bold text-black">Sign In</h3>
+                <p className="text-sm text-gray-500">
+                This is strictly for demo purposes - only your email and profile picture will be stored.
+                </p>
+              </div>
+              <div className="flex flex-col space-y-4 bg-gray-50 px-4 py-8 md:px-16">
+
               <button onClick={() => {
                 signIn('google') ;  
                 setSigninBtnClicked(true);
-                }} className="text-black flex items-center justify-center border px-4 w-full border-gray-200 bg-white hover:bg-gray-50 ">
+                }} className="border border-gray-200 bg-white text-black hover:bg-gray-50 flex h-10 w-full items-center justify-center space-x-3 rounded-md text-sm shadow-sm transition-all duration-75 focus:outline-none">
                     {
-                    signinBtnClicked ?   <div className="py-2"><LoadingDots color="#808080" /></div> :  <><p className="text-lg font-semibold py-2">Sign in with</p> <Google className="h-5 w-5 ml-2" /></>
+                    signinBtnClicked ?   <div className="py-2"><LoadingDots color="#808080" /></div> :  <><Google className="h-5 w-5 ml-2" /><p className="">Sign In with Google</p></>
                     }
                     
               </button>        
+              </div>
               
               </Dialog.Panel>
             </Transition.Child>
@@ -92,14 +101,17 @@ export function SiteHeader() {
               <div className="z-10000 w-56 text-right">
                     <Menu as="div" className="relative inline-block text-left">
                       <div>
-                        <Menu.Button className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-                          {/* <img src={session?.user?.image} className="rounded-full w-[32px] h-[32px]"/> */}
+                        <Menu.Button className="inline-flex justify-center">
+                      
                           <Image
                             alt={session?.user?.email || 'profile pic'}
-                            src={session?.user?.image || `https://avatars.dicebear.com/api/micah/${session?.user?.email}.svg`}
+                            src={session?.user?.image || `https://avatars.dicebear.com/api/micah/tanveer.svg`}
                             width={40}
                             height={40}
+                            priority
                             className="rounded-full"
+                            blurDataURL={'https://avatars.dicebear.com/api/micah/tanveer.svg'}
+                          placeholder="blur"
                           />
                         </Menu.Button>
                       </div>
@@ -113,13 +125,11 @@ export function SiteHeader() {
                         leaveTo="transform opacity-0 scale-95"
                       >
                         <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <div className="px-1 py-1 ">
+                          <div className="w-full rounded-md bg-white p-2 sm:w-56">
                             <Menu.Item>
                               {({ active }) => (
                                 <button
-                                  className={`${
-                                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-900'
-                                  } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                  className={`relative flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm text-gray-900 transition-all duration-75 hover:bg-gray-100`}
                                   onClick={() => signOut()}
                                 >
                                   <LogOut className="h-4 w-4 mr-1" />
@@ -143,7 +153,7 @@ export function SiteHeader() {
                 <button
                   type="button"
                   onClick={openModal}
-                  className="rounded-md bg-cyan-100 bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+                  className="rounded-full border border-black bg-black p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black"
                 >
                
                   Log In
