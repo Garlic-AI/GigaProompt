@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-// import { ChatOpenAI } from "langchain/chat_models/openai";
+import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAI } from "langchain/llms/openai";
 // import { HuggingFaceInference } from "langchain/llms/hf";
 // import { Cohere } from "langchain/llms/cohere";
@@ -15,6 +15,8 @@ import {
 } from "langchain/prompts";
 import { HumanChatMessage, SystemChatMessage } from "langchain/schema";
 import { NextRequest } from "next/server";
+import { type } from "os";
+import { Settings } from "lucide-react";
 
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -70,6 +72,35 @@ function createLLM(config: any) {
                 callbackManager: callbackManager,
             });
             break
+        case 'gpt-3.5':
+            llmInstance = new OpenAI({
+                temperature: 0.9,
+                // openAIApiKey: config.apiKey,
+                openAIApiKey: OPENAI_API_KEY,
+                streaming: true,
+                callbackManager: callbackManager,
+            });
+            break
+        case "gpt-3.5-turbo":
+            llmInstance = new ChatOpenAI({
+                temperature: 0.9,
+                // openAIApiKey: config.apiKey,
+                openAIApiKey: OPENAI_API_KEY,
+                streaming: true,
+                callbackManager: callbackManager,
+            });
+            break
+        case "gpt-4":
+            llmInstance = new ChatOpenAI({
+                temperature: 0.9,
+                // openAIApiKey: config.apiKey,
+                openAIApiKey: OPENAI_API_KEY,
+                streaming: true,
+                callbackManager: callbackManager,
+            });
+            break
+        
+
         // case 'azure':
         //     llmInstance =  new OpenAI({
         //         temperature: 0.9,
@@ -114,6 +145,14 @@ function createLLM(config: any) {
 
 }
 
+
+// Post req:
+// query: String
+// llmConfig: 
+//    type
+//    Settings
+// usePrevious: boolean
+// previousOuputs: string
 
 
 
