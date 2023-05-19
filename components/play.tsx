@@ -184,10 +184,11 @@ const Footer: FC<FooterProps> = ({
   }
 
   return (
-    <div className="relative sticky bottom-0 z-50 flex h-1/4 flex-col items-stretch justify-between border-t border-gray-200 bg-white shadow-lg outline-none backdrop-blur">
-      <div className=" left-2 top-2 p-3 text-sm text-gray-400">
-        ✨ proompt here ✨
-      </div>
+    <div className="flex flex-col items-stretch justify-between bg-white shadow-lg sticky bottom-0 z-1 relative h-1/4 backdrop-blur outline-none border-t border-gray-200">
+
+<div className=" top-2 left-2 text-sm text-gray-400 p-3">
+    ✨ proompt here ✨
+  </div>
       {/* <textarea
         className="flex-grow border-0 overflow-auto focus:outline-none shadow-none resize-none rounded-none h-full p-6 !outline-none pt-3"
         placeholder="Type your question or command here..."

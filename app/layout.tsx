@@ -1,3 +1,4 @@
+// "use client"
 import "@/styles/globals.css"
 import { Suspense } from "react"
 import { Metadata } from "next"
@@ -12,6 +13,7 @@ import Nav from "@/components/layout/nav"
 import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
+import { SessionProvider,useSession } from "next-auth/react"
 
 import { inter, sfPro } from "./fonts"
 
@@ -45,10 +47,11 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+
   return (
     <>
       <html lang="en">
-        <div className="mb-20"></div>
+  
         <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",
@@ -56,17 +59,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
           )}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Suspense fallback="...">
-              {/* @ts-expect-error Server Component */}
-              {/* <Nav /> */}
-            </Suspense>
-            <div className="relative flex min-h-screen flex-col">
-              <SiteHeader />
-
-              <div className="flex-1">{children}</div>
-            </div>
-            <TailwindIndicator />
-          </ThemeProvider>
+        
+           <div className="relative flex min-h-screen flex-col">
+            <SessionProvider >
+               <SiteHeader />
+               {children}
+            </SessionProvider>
+         
+             </div>
+             <TailwindIndicator />
+         </ThemeProvider>
+         
 
           {/* <main className="flex min-h-screen w-full flex-col items-center justify-center py-32">
             {children}
