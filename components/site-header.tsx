@@ -9,7 +9,6 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Dialog,Menu, Transition } from '@headlessui/react'
 import { useSession, signIn, signOut } from "next-auth/react"
 import { Google,LoadingDots } from "@/components/shared/icons";
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { LayoutDashboard, LogOut } from "lucide-react";
 import Image from "next/image";
 
