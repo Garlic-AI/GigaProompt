@@ -1,4 +1,4 @@
-"use client"
+
 import "@/styles/globals.css"
 import { Suspense } from "react"
 import { Metadata } from "next"
@@ -14,6 +14,7 @@ import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SessionProvider,useSession } from "next-auth/react"
+import Provider from "./Provider"
 
 
 export const metadata: Metadata = {
@@ -60,11 +61,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         
            <div className="relative flex min-h-screen flex-col">
-            <SessionProvider >
+            <Provider >
+              <>
                <SiteHeader />
                {children}
-            </SessionProvider>
-         
+              </>
+            </Provider>
              </div>
              <TailwindIndicator />
          </ThemeProvider>

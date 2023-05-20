@@ -86,16 +86,6 @@ export function SiteHeader() {
         <MainNav items={siteConfig.mainNav} />
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">
-            {/* {
-              session && session.user&&   
-              <>  
-               Signed in as {session.user.email} <br/>
-               <button onClick={() => signOut()}>Sign out</button>
-              </> 
-            }
-            {
-              JSON.stringify(session?.user?.image)
-            } */}
             {
               session?.user && status ==='authenticated'&&
               <>
